@@ -19,7 +19,7 @@ class Order{
       getorderItem();
       getorderPrice();
       sethour(int hour, int minute, int second);
-
+      setorderItem();
 };
 
 #endif /*ORDER_H*/
