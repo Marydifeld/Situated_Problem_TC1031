@@ -1,6 +1,6 @@
 #include "Order.h"
 #include<iostream>
-using namespace std; 
+
 
 Order::Order(string name, string order, float price){
     date = 0; 
@@ -35,6 +35,11 @@ void Order::setDate(string m, int d, int hr, int min, int sec){
     temp.tm_hour = hr; 
     temp.tm_min = min; 
     temp.tm_sec = sec; 
+    temp.tm_isdst = -1;
 
     date = mktime(&temp);
+}
+
+void Order::setDate(time_t d){
+    date = d; 
 }

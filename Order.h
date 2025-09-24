@@ -16,6 +16,7 @@ class Order{
       string getOrderItem();
       float getOrderPrice();
       void setDate(string month, int day, int hour, int minute, int second);
+      void setDate(time_t d);
 };
 
 #endif /*ORDER_H*/
