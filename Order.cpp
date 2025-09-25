@@ -1,4 +1,6 @@
 #include "Order.h"
+#include "Functions.h"
+#include <iomanip>
 #include<iostream>
 
 
@@ -25,21 +27,35 @@ float Order::getOrderPrice(){
 }
 
 void Order::setDate(string m, int d, int hr, int min, int sec){
-    string months[12] = {"ene", "Feb", "Mar", "Abr", "May" "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
+    string months[12] = {"Jan", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"};
+    if (m == "ene") {
+        m = "Jan";
+    }
+    else if (m == "Dic"){
+        m = "Dec";
+    }
+
     int i; 
     for (i = 0; months[i] != m; i++){}
-    tm temp = {};
-    temp.tm_year = 2025 - 1900;
-    temp.tm_mon = i; 
-    temp.tm_mday = d; 
-    temp.tm_hour = hr; 
-    temp.tm_min = min; 
-    temp.tm_sec = sec; 
-    temp.tm_isdst = -1;
+    
+    date = inputToTimeT(i, d, hr, min, sec);
 
-    date = mktime(&temp);
 }
 
 void Order::setDate(time_t d){
     date = d; 
+}
+
+string Order::orderToString(){
+     //Formating time
+    tm* lt = localtime(&date);
+    char fdate[80];
+    strftime(fdate, sizeof(fdate), "%b %d %H:%M:%S", lt);
+    
+
+    //Formating rest 
+    ostringstream oss;
+    oss << fdate << " R:" << restaurantName << " O:" << orderItem << 
+        "(" << fixed << setprecision(1) << orderPrice << ")" << endl; 
+    return oss.str(); 
 }

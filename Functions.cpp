@@ -32,7 +32,7 @@ void readFile(string fileName, vector<Order>& orders){
             name = rest.substr(0, pos - 1);
             order = rest.substr(pos + 2, pos2 - (pos + 2));
             price = strtof(rest.substr(pos2 + 1, pos3 - (pos2 + 1)).c_str(), nullptr);
-            //Create Oreder
+            //Create Order
             orders.push_back(Order(name, order, price));
             orders[i].setDate(month, day, hour, min, sec);
             i++;
@@ -42,17 +42,15 @@ void readFile(string fileName, vector<Order>& orders){
 }
 
 
-void writeFile(vector<Order> & orders){
+void writeFile(string fileName, vector<Order> & orders, int start, int end){
     ofstream outFile; 
 
-    outFile.open("sortedOrders.txt");
+    outFile.open(fileName);
+    
 
     if(outFile.is_open()){
-        for (int i = 0; i < orders.size(); i++){
-            time_t t = orders[i].getDate();
-            outFile << ctime(& t); 
-            outFile << orders[i].getDate() << endl;
-
+        for (int i = start; i < end; i++){
+           outFile << orders[i].orderToString();
         }
     }
     else{
@@ -116,4 +114,55 @@ void quicksort(vector<Order> &a, int left, int right){
 
 void quicksort(vector<Order> &a){
     quicksort(a, 0, a.size()-1);
+}
+
+int binarySearchLower(vector<Order> a, time_t flag){
+    //returns the lower bound of the potential place for the index 
+    int i = 0;
+    int j = a.size(); 
+    int m; 
+    while(i < j){
+        m = (i + j)/2;
+
+        if (a[m].getDate() < flag){
+            i = m + 1; 
+        } 
+        else{
+            j = m; 
+        }
+    }
+    return i; 
+
+}
+
+int binarySearchHigher(vector<Order> a, time_t flag){
+    //returns the lower bound of the potential place for the index 
+    int i = 0;
+    int j = a.size(); 
+    int m; 
+    while(i < j){
+        m = (i + j)/2;
+
+        if (a[m].getDate() <= flag){
+            i = m + 1; 
+        } 
+        else{
+            j = m; 
+        }
+    }
+    return i; 
+
+}
+
+time_t inputToTimeT(int month, int day, int hour, int minute, int second){
+    tm temp = {};
+    temp.tm_year = 2025 - 1900;
+    temp.tm_mon = month; 
+    temp.tm_mday = day; 
+    temp.tm_hour = hour; 
+    temp.tm_min = minute; 
+    temp.tm_sec = second; 
+    temp.tm_isdst = -1;
+
+    return mktime(&temp);
 }
