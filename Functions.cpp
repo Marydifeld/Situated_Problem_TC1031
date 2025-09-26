@@ -4,15 +4,20 @@
 #include<iostream>
 
 void readFile(string fileName, vector<Order>& orders){
-    /*
-    Reads the txt file and initializes an Order object for every line. 
+
+   /**
+     * @brief Reads the txt file and initializes an Order object for every line. 
+     * It iterates once trough every line of the database, so the complexity is O(n)
+     * 
+     * @param fileName Name of the file to be opened (Needs to end in .txt)
+     * @param orders Will contain the Orders 
     */
+
     string line; 
     int index; 
 
     ifstream inFile(fileName);
 
-    //Read data
     if (inFile.is_open()){ 
         int i = 0;
         while ( getline(inFile, line) ){
@@ -43,6 +48,16 @@ void readFile(string fileName, vector<Order>& orders){
 
 
 void writeFile(string fileName, vector<Order> & orders, int start, int end){
+    /**
+     * @brief Writes the output file in the correct format. We iterate between start and end, which is linear. 
+     * If we assume to be taking the entire vector, complexity is O(n)
+     * 
+     * @param fileName The name of the output file (needs .txt)
+     * @param orders Vector with all orders
+     * @param start Start index of the orders to be written 
+     * @param end End index of the orders to be written 
+     */
+
     ofstream outFile; 
 
     outFile.open(fileName);
@@ -50,7 +65,10 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
 
     if(outFile.is_open()){
         for (int i = start; i < end; i++){
-           outFile << orders[i].orderToString();
+            if (i < start + 10 ){
+                cout << orders[i].orderToString(); 
+            }
+            outFile << orders[i].orderToString();
         }
     }
     else{
@@ -60,21 +78,37 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
 }
 
 time_t pivot(vector<Order> &a, int right, int left) {
-  int center = (left + right) / 2;
-  if (a[center].getDate() < a[left].getDate()) {
+    /**
+     * @brief Picks a pivot for quicksort (median of three). No iterations so, constant time O(1)
+     * 
+     * @param a Vector that in which we need to pick the pivot
+     * @param right Index of the start of the subarray with the pivot
+     * @param left Index of the end of the subarray with the pivot
+     * 
+     * @return A time_t value representing the pivot for quicksort
+     */
+    int center = (left + right) / 2;
+    if (a[center].getDate() < a[left].getDate()) {
     swap(a[center], a[left]);
-  }
-  if (a[left].getDate() > a[right].getDate()) {
+    }
+    if (a[left].getDate() > a[right].getDate()) {
     swap(a[right], a[left]);
-  }
-  if (a[right].getDate() < a[center].getDate()) {
+    }
+    if (a[right].getDate() < a[center].getDate()) {
     swap(a[center], a[right]);
-  }
-  swap(a[center], a[right - 1]);
-  return a[right - 1].getDate();
+    }
+    swap(a[center], a[right - 1]);
+    return a[right - 1].getDate();
 }
 
 void insertionSort(vector<Order> & a){ 
+    /**
+     * @brief The insertion sort algorithm. It works by setting aside an unsorted number
+     * and pushing the sorted numbers forward until it can fit. This is a complementary 
+     * function to quicksort. Since we iterate once for every element, complexity is O(n^2)
+     * 
+     * @param a The array to be sorted 
+     */
     int j; 
     for (int i = 1; i < a.size(); i++){ 
         time_t temp = a[i].getDate();
@@ -87,6 +121,16 @@ void insertionSort(vector<Order> & a){
 }
 
 void quicksort(vector<Order> &a, int left, int right){
+    /**
+     * @brief Helper function of quicksort(). Uses pivot to find the median of three and sorts
+     * the numbers by moving the ones that are smaller than pivot to the left and bigger ones to the right. 
+     * It returns the pivot into place and repeats this process in smaller halves recurssivly. Because
+     * the array is halved, complexity is usually O(nlogn), but worst case it's O(n^2).
+     * 
+     * @param a The array to be sorted 
+     * @param left The start of the current subarray 
+     * @param right The end of the current subarray 
+     */
     //discard small arrays 
     if (left + 10 <= right){
         const int & PIVOT = pivot(a, right, left);
@@ -117,7 +161,16 @@ void quicksort(vector<Order> &a){
 }
 
 int binarySearchLower(vector<Order> a, time_t flag){
-    //returns the lower bound of the potential place for the index 
+    /**
+     * @brief Binary search adapted to find the date or the lowest index of where it could have
+     * been placed in the sorted array. Very similar structure to binary date, which works by halving 
+     * the array time and time again, which means O(logn)
+     * 
+     * @param a Contains the values to be searched
+     * @param flag Value being searched
+     * 
+     * @return Index of the hipothetical position of the flag
+     */
     int i = 0;
     int j = a.size(); 
     int m; 
@@ -136,7 +189,16 @@ int binarySearchLower(vector<Order> a, time_t flag){
 }
 
 int binarySearchHigher(vector<Order> a, time_t flag){
-    //returns the lower bound of the potential place for the index 
+    /**
+     * @brief Binary search adapted to find the date or the highest index of where it could have
+     * been placed in the sorted array. Very similar structure to binary date, which works by halving 
+     * the array time and time again, which means O(logn)
+     * 
+     * @param a Contains the values to be searched
+     * @param flag Value being searched
+     * 
+     * @return Index of the hipothetical position of the flag
+     */
     int i = 0;
     int j = a.size(); 
     int m; 
@@ -155,6 +217,17 @@ int binarySearchHigher(vector<Order> a, time_t flag){
 }
 
 time_t inputToTimeT(int month, int day, int hour, int minute, int second){
+    /**
+     * @brief A helper function to turn input into time_t. It's only conversion so O(1)
+     * 
+     * @param month Month of the date
+     * @param day Day of the given date 
+     * @param hour Hour of the given time (Defaults to 0)
+     * @param minute Minute of the given time (Defaults to 0)
+     * @param second Second of the given time (Defaults to 0)
+     * 
+     * @return The time_t equivalent of the date given 
+     */
     tm temp = {};
     temp.tm_year = 2025 - 1900;
     temp.tm_mon = month; 

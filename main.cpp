@@ -11,25 +11,22 @@ vector<Order> orders;
 int main(){
     //Read & Sort
     readFile("orders.txt", orders);
+    cout << "Reading File..." << endl; 
+    cout << "------------ First 10 sorted entries --------------" << endl; 
     quicksort(orders);
     writeFile("sortedOrders.txt", orders, 0, orders.size());
-    
+    cout << "------------ File read and sorted -----------------" << endl; 
 
     //Console
     string start_date, end_date; 
     cout << "Wellcome to the search tool by date" << endl;
-    cout << "Please be mindfull of the requested format. This tool currently doesn't support years. (dd/mm)" << endl;
+    cout << "Please be mindful of the requested format. This tool currently doesn't support years. (dd/mm)" << endl;
     cout << "Enter start and end dates separated by a blank space. (dd/mm dd/mm)" << endl; 
     cin >> start_date >> end_date; 
     time_t start, end; 
 
     start = inputToTimeT(stoi(start_date.substr(3, 2)) - 1, stoi(start_date.substr(0, 2)));
     end = inputToTimeT(stoi(end_date.substr(3, 2)) - 1, stoi(end_date.substr(0, 2)), 23, 59, 59);
-
-
-    cout << "Please check input format and try again" << endl; 
-
-    
 
     //Search
     int start_index = binarySearchLower(orders, start);
@@ -39,6 +36,7 @@ int main(){
     cout << "Would you like to save the results in a separate File? (y/n)";
     cin >> ans; 
     if (ans == 'y'){
+        cout << "------------ First 10 entries of search --------------" << endl;
         writeFile("search_results.txt", orders, start_index, end_index);
     }
     else if (ans == 'n'){
