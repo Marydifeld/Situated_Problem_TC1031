@@ -101,89 +101,6 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
     outFile.close();
 }
 
-time_t pivot(vector<Order> &a, int right, int left) {
-    /**
-     * @brief Picks a pivot for quicksort (median of three). No iterations so, constant time O(1)
-     * 
-     * @param a Vector that in which we need to pick the pivot
-     * @param right Index of the start of the subarray with the pivot
-     * @param left Index of the end of the subarray with the pivot
-     * 
-     * @return A time_t value representing the pivot for quicksort
-     */
-    int center = (left + right) / 2;
-    if (a[center].getDate() < a[left].getDate()) {
-    swap(a[center], a[left]);
-    }
-    if (a[left].getDate() > a[right].getDate()) {
-    swap(a[right], a[left]);
-    }
-    if (a[right].getDate() < a[center].getDate()) {
-    swap(a[center], a[right]);
-    }
-    swap(a[center], a[right - 1]);
-    return a[right - 1].getDate();
-}
-
-void insertionSort(vector<Order> & a){ 
-    /**
-     * @brief The insertion sort algorithm. It works by setting aside an unsorted number
-     * and pushing the sorted numbers forward until it can fit. This is a complementary 
-     * function to quicksort. Since we iterate once for every element, complexity is O(n^2)
-     * 
-     * @param a The array to be sorted 
-     */
-    int j; 
-    for (int i = 1; i < a.size(); i++){ 
-        time_t temp = a[i].getDate();
-        for (j = i; j > 0 && a[j - 1].getDate() > temp; j--){
-            a[j] = a[j - 1]; 
-        }
-        a[j].setDate(temp);
-        
-    }
-}
-
-void quicksort(vector<Order> &a, int left, int right){
-    /**
-     * @brief Helper function of quicksort(). Uses pivot to find the median of three and sorts
-     * the numbers by moving the ones that are smaller than pivot to the left and bigger ones to the right. 
-     * It returns the pivot into place and repeats this process in smaller halves recurssivly. Because
-     * the array is halved, complexity is usually O(nlogn), but worst case it's O(n^2).
-     * 
-     * @param a The array to be sorted 
-     * @param left The start of the current subarray 
-     * @param right The end of the current subarray 
-     */
-    //discard small arrays 
-    if (left + 10 <= right){
-        const int & PIVOT = pivot(a, right, left);
-        int i = left, j = right - 1; 
-        for (;;){
-            while (a[++i].getDate() < PIVOT){ }
-            while (a[--j].getDate() > PIVOT) { }
-            if (i < j ) {
-                swap(a[i], a[j]);
-            }else{
-                break; 
-            }
-        } 
-        //Pivot back in place
-        swap(a[i], a[right - 1]);
-
-        //Sort left and right partitions 
-        quicksort(a, left, i - 1);
-        quicksort(a, i + 1, right);
-        
-    } else {
-        insertionSort(a);
-    }
-}
-
-void quicksort(vector<Order> &a){
-    quicksort(a, 0, a.size()-1);
-}
-
 int binarySearchLower(vector<Order> a, time_t flag){
     /**
      * @brief Binary search adapted to find the date or the lowest index of where it could have
@@ -240,7 +157,7 @@ int binarySearchHigher(vector<Order> a, time_t flag){
 
 }
 
-time_t inputToTimeT(int month, int day, int hour, int minute, int second){
+time_t inputToTimeT(int month, int day, int hour = 0, int minute = 0, int second = 0){
     /**
      * @brief A helper function to turn input into time_t. It's only conversion so O(1)
      * 
@@ -321,5 +238,47 @@ string Order::orderToString(){
 }
 
 int main(){
+    //Read & Sort
+    vector<Order> orders;
+    readFile("orders.txt", orders);
+    cout << "Reading File..." << endl; 
+    cout << "------------ First 10 sorted entries --------------" << endl; 
+    //quicksort(orders);
+    writeFile("sortedOrders.txt", orders, 0, orders.size());
+    cout << "------------ File read and sorted -----------------" << endl; 
+
+    //Console
+    string start_date, end_date; 
+    cout << "Welcome to the search tool by date" << endl;
+    cout << "Please be mindful of the requested format. This tool currently doesn't support years. (dd/mm)" << endl;
+    cout << "Enter start and end dates separated by a blank space. (dd/mm dd/mm)" << endl; 
+    cin >> start_date >> end_date; 
+    time_t start, end; 
+
+    start = inputToTimeT(stoi(start_date.substr(3, 2)) - 1, stoi(start_date.substr(0, 2)));
+    end = inputToTimeT(stoi(end_date.substr(3, 2)) - 1, stoi(end_date.substr(0, 2)), 23, 59, 59);
+
+    //Search
+    int start_index = binarySearchLower(orders, start);
+    int end_index = binarySearchHigher(orders, end);
+
+    char ans; 
+    cout << "Would you like to save the results in a separate File? (y/n)";
+    cin >> ans; 
+    if (ans == 'y'){
+        cout << "------------ First 10 entries of search --------------" << endl;
+        writeFile("search_results.txt", orders, start_index, end_index);
+    }
+    else if (ans == 'n'){
+        for (int i = start_index; i <= end_index; i++){
+            cout << orders[i].orderToString();
+        }
+    }
+    
+    
+
+
+
+
     return 0; 
 }
