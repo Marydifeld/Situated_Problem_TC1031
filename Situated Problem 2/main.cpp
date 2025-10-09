@@ -25,8 +25,6 @@ class Order{
       string orderToString();
 };
 
-//Singly linked list Class
-
 //Doubly linked list Class
 
 //Stack Class
@@ -88,7 +86,6 @@ string Order::orderToString(){
     return oss.str(); 
 }
 
-//---------------------------------Declaring Singly linked list Methods--------------------------------//
 
 //---------------------------------Declaring Doubly linked list Methods--------------------------------//
 
