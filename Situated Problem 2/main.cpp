@@ -5,9 +5,9 @@
 #include<iostream>
 #include<fstream>
 #include<sstream>
+using namespace std; 
 //------------------------------- Classes --------------------------------------//
 //Order Class
-using namespace std; 
 class Order{
     private:
       time_t date;
@@ -26,8 +26,74 @@ class Order{
 };
 
 //Doubly linked list Class
+class DoublyLinkedList {
+    private: 
+        struct ListNode {
+            int value; 
+            ListNode* next;
+            ListNode* prev; 
+            ListNode(const int& element, ListNode* n = NULL, ListNode* p = NULL)
+                : value(element), next(n), prev(p) { }
+        };
+    ListNode* first = NULL;
+    ListNode* last = NULL; 
+    int size; 
+
+    public: 
+        DoublyLinkedList(){
+                this->first = NULL; 
+                this->last = NULL; 
+                this->size = 0;
+        }
+        ~DoublyLinkedList(){
+            while(!isEmpty())
+        		deleteLast();
+        }
+        int getSize(){return size;}
+		void showList();
+        bool isEmpty();
+		
+		void insertFirst(ListNode);		
+		void insertLast(ListNode);
+		bool insertAtIndex(int, ListNode); 	
+
+		void deleteFirst();
+		void deleteLast();				
+		void deleteAtIndex(int);		
+
+		ListNode* find(ListNode, int*);			
+		void update(int, ListNode);	
+
+};
 
 //Stack Class
+class Stack {
+    struct StackNode{
+        int value;
+        StackNode* next; 
+        StackNode(const int & element, StackNode* n = NULL)
+            : value(element), next(n) { }
+    };
+
+    int size = 0;
+    StackNode* top; 
+    public:
+		Stack(){	
+			top = NULL;
+		}
+
+		~Stack(){
+    		while(!isEmpty())
+        		pop();
+		}
+		
+		bool push (int value);
+		int pop();
+		int getSize();
+		int getTop();
+		bool isEmpty();
+		void show();
+};
 
 //----------------------------------------Declaring Order Methods--------------------------------//
 Order::Order(string name, string order, float price){
