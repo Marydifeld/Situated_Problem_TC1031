@@ -28,13 +28,13 @@ class Order{
 //Doubly linked list Class
 class DoublyLinkedList {
     private: 
-        struct ListNode {
-            int value; 
-            ListNode* next;
-            ListNode* prev; 
-            ListNode(const int& element, ListNode* n = NULL, ListNode* p = NULL)
-                : value(element), next(n), prev(p) { }
-        };
+    struct ListNode {
+        int value; 
+        ListNode* next;
+        ListNode* prev; 
+        ListNode(const int& element, ListNode* n = NULL, ListNode* p = NULL)
+            : value(element), next(n), prev(p) { }
+    };
     ListNode* first = NULL;
     ListNode* last = NULL; 
     int size; 
@@ -61,8 +61,8 @@ class DoublyLinkedList {
 		void deleteLast();				
 		void deleteAtIndex(int);		
 
-		ListNode* find(ListNode, int*);			
-		void update(int, ListNode);	
+		ListNode* find(int, int*);			
+		void update(int, int);	
 
 };
 
@@ -113,11 +113,9 @@ string Order::getName(){
 string Order::getOrderItem(){
     return orderItem;
 }
-
 float Order::getOrderPrice(){
     return orderPrice;
 }
-
 void Order::setDate(string m, int d, int hr, int min, int sec){
     string months[12] = {"Jan", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"};
     if (m == "ene") {
@@ -133,11 +131,9 @@ void Order::setDate(string m, int d, int hr, int min, int sec){
     date = inputToTimeT(i, d, hr, min, sec);
 
 }
-
 void Order::setDate(time_t d){
     date = d; 
 }
-
 string Order::orderToString(){
      //Formating time
     tm* lt = localtime(&date);
@@ -154,9 +150,299 @@ string Order::orderToString(){
 
 
 //---------------------------------Declaring Doubly linked list Methods--------------------------------//
+void DoublyLinkedList::insertFirst(ListNode newValue){
+/**
+ * @brief inserts a value at the start of a list. O(1)
+ * 
+ * @param newValue The value T to be inserted in the list 
+ */
+	ListNode* node = new ListNode(newValue);
+	ListNode* aux = first;
 
+	node->next = aux;
+	first = node;
+
+	// ensure last is defined
+	if (size == 0)
+		last = node;
+	else 
+	    aux->prev = first; 
+	
+	//preserve a circular list
+	first->prev = last;
+	last->next = first; 
+	size++;
+}
+
+void DoublyLinkedList::insertLast(ListNode newValue){
+/**
+ * @brief inserts a value at the end of the list. O(1)
+ * 
+ * @param newValue The value T to be inserted in the list 
+ */
+	ListNode* node = new ListNode(newValue);
+	ListNode* secondLast = last;
+
+	node->prev = secondLast;
+	last = node;
+
+	// ensure if "first" is defined
+	if (size == 0)
+	   first = node;
+	else 
+	   secondLast->next = last;
+
+	//preserve a circular list
+	first->prev = last;
+	last->next = first;
+
+	size++;
+}
+
+void DoublyLinkedList::showList(){
+/**
+ * @brief Couts the size and the values of in the list. O(n)
+ */
+	cout<< "Size: " << size << endl;
+
+	ListNode* aux = first;
+	int i = 0;
+	while(i < size){
+		cout << aux->value << " ";
+		aux = aux->next;
+		i++;
+	}
+	cout << endl;
+}
+
+bool DoublyLinkedList::insertAtIndex(int index, ListNode newValue){	
+/**
+ * @brief inserts a new Value at a specified index. O(n)
+ * 
+ * @param index The index where the vaule is to be inserted 
+ * @param newValue The value to be inserted
+ * 
+ * @return A bool depending on if the insetion was successful 
+ */
+	if (index == 0){
+		insertFirst(newValue);
+		return true; 
+	}
+	else if (index == size){
+		insertLast(newValue);
+		return true; 
+	}
+	else if (index < size && index >= 0){
+		int i = 0; 
+		ListNode* aux = first; 
+		while (i != index - 1){
+			aux = aux->next;
+			i ++; 
+		}
+		ListNode* node = new ListNode(newValue);
+		node->next = aux->next;
+		aux->next = node; 
+		node->prev = aux; 
+		node->next->prev = node;
+		size++;
+		return true;
+
+	}
+	return false; 
+}
+
+DoublyLinkedList::ListNode* DoublyLinkedList::find(int value, int* index){	
+/**
+ * @brief Find a specific value and passes the index by pointer O(n)
+ * 
+ * @param value The value that is being looked for 
+ * @param index A pointer to the index, will be modified to contain the
+ * index where the value is found 
+ * @return The node that was looked for 
+ */
+	ListNode* aux = first; 
+	*index = -1; 
+	int i = 0; 
+	while (i < size){
+		if (value == aux->value){
+			*index = i; 
+			return aux; 
+		}
+		aux = aux->next;
+		i++; 
+	}
+	return NULL; 
+}
+
+void DoublyLinkedList::deleteFirst(){
+/**
+ * @brief Deletes the first item of the list, O(1). No inputs or outputs. 
+ */
+	if (size == 1){
+		delete first; 
+		size--; 
+		first = nullptr; 
+		last = nullptr; 
+
+	}
+	else if (size != 0){
+		ListNode* aux = first; 
+		first = aux->next; 
+		first->prev = last;
+		last->next = first; 
+		delete aux; 
+		size--; 
+	}
+}
+
+void DoublyLinkedList::deleteLast(){
+	/**
+ * @brief Deletes the last item of the list, O(1). No inputs or outputs.
+ */
+    if (size == 1){
+        delete last;
+        size--;
+        first = NULL;   // en lugar de nullptr
+        last = NULL;    // en lugar de nullptr
+    }
+    else if (size != 0){
+        ListNode* aux = last;
+        last = aux->prev;
+        last->next = first;
+        first->prev = last;
+        delete aux;
+        size--;
+    }
+}
+
+void DoublyLinkedList::deleteAtIndex(int index){
+/**
+ * @brief Deletes a node at a specified index, O(n).
+ * 
+ * @param index The index of the node to delete
+ */
+    if (index < 0 || index >= size){
+        return; 
+    }
+    else if (index == 0){
+        deleteFirst();
+    }
+    else if (index == size - 1){
+        deleteLast();
+    }
+    else{
+        int i = 0;
+        ListNode* aux = first;
+        while (i != index){
+            aux = aux->next;
+            i++;
+        }
+        aux->prev->next = aux->next;
+        aux->next->prev = aux->prev;
+        delete aux;
+        size--;
+    }
+}
+
+void DoublyLinkedList::update(int index, int newValue){
+/**
+ * @brief Updates the value at a specific index, O(n).
+ * 
+ * @param index The index of the node to update
+ * @param newValue The new value to set
+ */
+    if (index < 0 || index >= size){
+        return;
+    }
+    int i = 0;
+    ListNode* aux = first;
+    while (i != index){
+        aux = aux->next;
+        i++;
+    }
+    aux->value = newValue;
+}
 //--------------------------------------Declaring Stack Methods---------------------------------------//
+bool Stack::push (int value){
+	/**
+	 * @brief Adds a new value on top of the stack. O(1)
+	 * 
+	 * @param value The value to be added
+	 * 
+	 * @return Only if push was successful
+	 */
 
+	StackNode* newNode = new StackNode(value);
+	newNode->next = top;  
+	top = newNode; 
+	size++;
+	return true; 	
+	
+}
+
+int Stack::pop(){
+	/**
+	 * @brief Deletes the top value of the stack, O(1)
+	 * 
+	 * @return The top value of the stack 
+	 */
+	int val = -1; 
+	if (!isEmpty()){
+		StackNode* aux = top;
+		val = top->value;
+		top = top->next;
+		delete aux; 
+		size--;
+	}
+	
+	return val; 
+}
+
+void Stack::show(){
+	/**
+	 * @brief shows all items in the stack, O(n)
+	 */
+	StackNode* aux = top; 
+	if (isEmpty()){
+		cout << "Stack is empty" << endl;
+	} else {
+		for (int i = 0; aux != NULL; i++){
+			cout << "Stack[" << i << "] = " << aux->value << endl; 
+			aux = aux->next; 
+		}
+	}
+}
+
+bool Stack::isEmpty(){
+/** 
+ * @brief Check if the stack is empty O(1)
+ * 
+ * @return true if top is NULL, false otherwise
+*/	
+    return top == NULL;
+}
+
+int Stack::getSize(){
+/**
+ * @brief Get the number of elements in the stack O(1)
+ * 
+ * @return int number of elements
+ */
+	return size; 
+}
+
+int Stack::getTop(){	
+/**
+ * @brief Get the top value of the stack without removing it O(1)
+ * 
+ * @return int value at the top, -1 if empty
+ */
+	if (isEmpty()){
+		cout << "Stack is empty!" << endl;
+		return -1;
+	}
+	return top->value;  
+}
 //--------------------------------------- Auxiliary functions ----------------------------------------//
 void readFile(string fileName, vector<Order>& orders){
 
