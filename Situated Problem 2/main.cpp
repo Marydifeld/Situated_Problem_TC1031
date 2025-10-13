@@ -122,7 +122,7 @@ float Order::getOrderPrice(){
 }
 void Order::setDate(string m, int d, int hr, int min, int sec){
     string months[12] = {"Jan", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"};
-    if (m == "ene") {
+    if (m == "Ene") {
         m = "Jan";
     }
     else if (m == "Dic"){
@@ -452,6 +452,35 @@ int Stack::getTop(){
 	}
 	return top->value;  
 }
+
+//--------------------------------------- Partition ----------------------------------------//
+int partition(int arr[], int first, int last, int i, int j, int pivot){
+    /**
+     * @brief Partition function for iterative quicksort.
+     * 
+     * @param arr The array to be partitioned
+     * @param first The starting index of the array to be partitioned
+     * @param last The ending index of the array to be partitioned
+     * @param pivot The pivot value to partition
+     * 
+     */
+    pivot = arr[last];
+    i = (first - 1);
+    for (j = first; j <= last - 1; j++){
+        if (arr[j] <= pivot){
+            i++;
+            swap(arr[i], arr[j]);
+        }
+        else{
+            continue;
+        }
+    }
+    swap(arr[i + 1], arr[last]);
+    return (i + 1);
+}
+
+//--------------------------------------- Iterative QuickSort ----------------------------------------//
+
 //--------------------------------------- Auxiliary functions ----------------------------------------//
 void readFile(string fileName, vector<Order>& orders){
 
@@ -763,8 +792,11 @@ int binarySearchHigher(vector<Order> a, time_t flag){
 }
 
 //Binary search higher for strings
-//Binary search lower for strings 
+int binarySearchHighStrings(arr[], string restaurantName){
 
+}
+
+//Binary search lower for strings 
 
 
 int main(){
