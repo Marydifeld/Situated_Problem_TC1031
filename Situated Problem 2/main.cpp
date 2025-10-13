@@ -454,17 +454,17 @@ int Stack::getTop(){
 }
 
 //--------------------------------------- Partition ----------------------------------------//
-int partition(int arr[], int first, int last, int i, int j, int pivot){
+int partition(DoublyLinkedList a, int first, int last, int i, int j, int pivot){
     /**
      * @brief Partition function for iterative quicksort.
      * 
-     * @param arr The array to be partitioned
+     * @param a 
      * @param first The starting index of the array to be partitioned
      * @param last The ending index of the array to be partitioned
      * @param pivot The pivot value to partition
      * 
      */
-    pivot = arr[last];
+    pivot = a.find();
     i = (first - 1);
     for (j = first; j <= last - 1; j++){
         if (arr[j] <= pivot){
