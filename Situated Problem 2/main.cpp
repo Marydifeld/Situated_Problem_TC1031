@@ -23,16 +23,17 @@ class Order{
       void setDate(string month, int day, int hour, int minute, int second);
       void setDate(time_t d);
       string orderToString();
+      bool operator==(const Order& other) const;
 };
 
 //Doubly linked list Class
 class DoublyLinkedList {
     private: 
     struct ListNode {
-        int value; 
+        Order value; 
         ListNode* next;
         ListNode* prev; 
-        ListNode(const int& element, ListNode* n = NULL, ListNode* p = NULL)
+        ListNode(const Order& element, ListNode* n = NULL, ListNode* p = NULL)
             : value(element), next(n), prev(p) { }
     };
     ListNode* first = NULL;
@@ -49,20 +50,23 @@ class DoublyLinkedList {
             while(!isEmpty())
         		deleteLast();
         }
+
+        ListNode* getLast(){return last;}
+        ListNode* getFirst(){return first;}
         int getSize(){return size;}
 		void showList();
         bool isEmpty();
 		
-		void insertFirst(ListNode);		
-		void insertLast(ListNode);
-		bool insertAtIndex(int, ListNode); 	
+		void insertFirst(Order);		
+		void insertLast(Order);
+		bool insertAtIndex(int, Order); 	
 
 		void deleteFirst();
 		void deleteLast();				
 		void deleteAtIndex(int);		
 
-		ListNode* find(int, int*);			
-		void update(int, int);	
+		ListNode* find(Order, int*);			
+		void update(int, Order);	
 
 };
 
@@ -147,10 +151,15 @@ string Order::orderToString(){
         "(" << fixed << setprecision(1) << orderPrice << ")" << endl; 
     return oss.str(); 
 }
-
+bool Order::operator==(const Order& other) const{
+    return (this->date == other.date &&
+            this->restaurantName == other.restaurantName &&
+            this->orderItem == other.orderItem &&
+            this->orderPrice == other.orderPrice);
+}
 
 //---------------------------------Declaring Doubly linked list Methods--------------------------------//
-void DoublyLinkedList::insertFirst(ListNode newValue){
+void DoublyLinkedList::insertFirst(Order newValue){
 /**
  * @brief inserts a value at the start of a list. O(1)
  * 
@@ -174,7 +183,7 @@ void DoublyLinkedList::insertFirst(ListNode newValue){
 	size++;
 }
 
-void DoublyLinkedList::insertLast(ListNode newValue){
+void DoublyLinkedList::insertLast(Order newValue){
 /**
  * @brief inserts a value at the end of the list. O(1)
  * 
@@ -208,14 +217,14 @@ void DoublyLinkedList::showList(){
 	ListNode* aux = first;
 	int i = 0;
 	while(i < size){
-		cout << aux->value << " ";
+		cout << aux->value.orderToString();
 		aux = aux->next;
 		i++;
 	}
 	cout << endl;
 }
 
-bool DoublyLinkedList::insertAtIndex(int index, ListNode newValue){	
+bool DoublyLinkedList::insertAtIndex(int index, Order newValue){	
 /**
  * @brief inserts a new Value at a specified index. O(n)
  * 
@@ -251,7 +260,7 @@ bool DoublyLinkedList::insertAtIndex(int index, ListNode newValue){
 	return false; 
 }
 
-DoublyLinkedList::ListNode* DoublyLinkedList::find(int value, int* index){	
+DoublyLinkedList::ListNode* DoublyLinkedList::find(Order value, int* index){	
 /**
  * @brief Find a specific value and passes the index by pointer O(n)
  * 
@@ -344,7 +353,7 @@ void DoublyLinkedList::deleteAtIndex(int index){
     }
 }
 
-void DoublyLinkedList::update(int index, int newValue){
+void DoublyLinkedList::update(int index, Order newValue){
 /**
  * @brief Updates the value at a specific index, O(n).
  * 
@@ -449,6 +458,7 @@ void readFile(string fileName, vector<Order>& orders){
    /**
      * @brief Reads the txt file and initializes an Order object for every line. 
      * It iterates once trough every line of the database, so the complexity is O(n)
+     * This overload saves it to a vector.
      * 
      * @param fileName Name of the file to be opened (Needs to end in .txt)
      * @param orders Will contain the Orders 
@@ -482,6 +492,47 @@ void readFile(string fileName, vector<Order>& orders){
             orders.push_back(Order(name, order, price));
             orders[i].setDate(month, day, hour, min, sec);
             i++;
+        }
+    }
+    inFile.close();
+}
+
+void readFile(string fileName, DoublyLinkedList& orders){
+    /**
+     * @brief Reads the txt file and initializes an Order object for every line. 
+     * It iterates once trough every line of the database, so the complexity is O(n)
+     * This overload saves it to a linked list. 
+     * 
+     * @param fileName Name of the file to be opened (Needs to end in .txt)
+     * @param orders Will contain the Orders 
+    */
+   
+    string line; 
+    int index; 
+
+    ifstream inFile(fileName);
+
+    if (inFile.is_open()){ 
+        while ( getline(inFile, line) ){
+            //Temporary variables
+            string month, name, order, rest; 
+            char extra; 
+            int day, hour, min, sec; 
+            float price; 
+            istringstream iss(line);
+            //Diveide line
+            iss >> month >> day >> hour >> extra >> min >> extra >> sec;  
+            getline(iss, rest);
+            rest.erase(0, 3);
+            size_t pos = rest.find("O:");
+            size_t pos2 = rest.find("(");
+            size_t pos3 = rest.find(")");
+            name = rest.substr(0, pos - 1);
+            order = rest.substr(pos + 2, pos2 - (pos + 2));
+            price = strtof(rest.substr(pos2 + 1, pos3 - (pos2 + 1)).c_str(), nullptr);
+            //Create Order
+            orders.insertLast(Order(name, order, price));
+            orders.getLast()->value.setDate(month, day, hour, min, sec);
         }
     }
     inFile.close();
