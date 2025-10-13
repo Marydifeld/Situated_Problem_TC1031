@@ -546,6 +546,29 @@ time_t inputToTimeT(int month, int day, int hour = 0, int minute = 0, int second
 //Parttition
 
 //iterative_quicksort
+void iterative_quicksort(DoublyLinkedList &a, int left, int right){
+    Stack s;
+    s.push(left);
+    s.push(right);
+    while (!s.isEmpty()){
+        right = s.pop();
+        left = s.pop();
+        pivot = partition(a, left, right);
+
+        if (left != pivot.prev && left != pivot){
+            stack.push(left);
+            stack.push(pivot.prev);
+
+        }
+        if (right != pivot.next && right != pivot){
+            s.push(pivot.next);
+            s.push(right);
+        }
+    }
+
+
+
+}
 
 time_t pivot(vector<Order> &a, int right, int left) {
     /**
