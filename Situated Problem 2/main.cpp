@@ -6,6 +6,7 @@
 #include<fstream>
 #include<sstream>
 using namespace std; 
+using std::cout; 
 //------------------------------- Classes --------------------------------------//
 //Order Class
 class Order{
@@ -25,21 +26,22 @@ class Order{
       string orderToString();
       bool operator==(const Order& other) const;
 };
-
+//ListNode struct (Needs to be acces by other functions)
+struct ListNode {
+            Order value; 
+            ListNode* next;
+            ListNode* prev; 
+            ListNode(const Order& element, ListNode* n = NULL, ListNode* p = NULL)
+                : value(element), next(n), prev(p) { }
+        };
 //Doubly linked list Class
 class DoublyLinkedList {
     private: 
-    struct ListNode {
-        Order value; 
-        ListNode* next;
-        ListNode* prev; 
-        ListNode(const Order& element, ListNode* n = NULL, ListNode* p = NULL)
-            : value(element), next(n), prev(p) { }
-    };
-    ListNode* first = NULL;
-    ListNode* last = NULL; 
-    int size; 
-
+        
+        ListNode* first = NULL;
+        ListNode* last = NULL; 
+        int size; 
+                                            
     public: 
         DoublyLinkedList(){
                 this->first = NULL; 
@@ -54,6 +56,7 @@ class DoublyLinkedList {
         ListNode* getLast(){return last;}
         ListNode* getFirst(){return first;}
         int getSize(){return size;}
+        ListNode* getAtIndex(int);
 		void showList();
         bool isEmpty();
 		
@@ -73,9 +76,9 @@ class DoublyLinkedList {
 //Stack Class
 class Stack {
     struct StackNode{
-        int value;
+        Order value;
         StackNode* next; 
-        StackNode(const int & element, StackNode* n = NULL)
+        StackNode(const Order & element, StackNode* n = NULL)
             : value(element), next(n) { }
     };
 
@@ -91,10 +94,10 @@ class Stack {
         		pop();
 		}
 		
-		bool push (int value);
-		int pop();
+		bool push (Order value);
+		Order pop();
 		int getSize();
-		int getTop();
+		Order getTop();
 		bool isEmpty();
 		void show();
 };
@@ -159,6 +162,18 @@ bool Order::operator==(const Order& other) const{
 }
 
 //---------------------------------Declaring Doubly linked list Methods--------------------------------//
+ListNode* DoublyLinkedList::getAtIndex(int index){
+    int i = 0; 
+    if (index >= size || index < 0){
+        return nullptr;
+    }
+    ListNode* aux = first; 
+    for (i; i != index; i++){
+        aux = aux->next;
+    }
+    return aux;  
+}
+
 void DoublyLinkedList::insertFirst(Order newValue){
 /**
  * @brief inserts a value at the start of a list. O(1)
@@ -260,7 +275,7 @@ bool DoublyLinkedList::insertAtIndex(int index, Order newValue){
 	return false; 
 }
 
-DoublyLinkedList::ListNode* DoublyLinkedList::find(Order value, int* index){	
+ListNode* DoublyLinkedList::find(Order value, int* index){	
 /**
  * @brief Find a specific value and passes the index by pointer O(n)
  * 
@@ -372,7 +387,7 @@ void DoublyLinkedList::update(int index, Order newValue){
     aux->value = newValue;
 }
 //--------------------------------------Declaring Stack Methods---------------------------------------//
-bool Stack::push (int value){
+bool Stack::push (Order value){
 	/**
 	 * @brief Adds a new value on top of the stack. O(1)
 	 * 
@@ -389,20 +404,19 @@ bool Stack::push (int value){
 	
 }
 
-int Stack::pop(){
+Order Stack::pop(){
 	/**
 	 * @brief Deletes the top value of the stack, O(1)
 	 * 
 	 * @return The top value of the stack 
 	 */
-	int val = -1; 
-	if (!isEmpty()){
-		StackNode* aux = top;
-		val = top->value;
-		top = top->next;
-		delete aux; 
-		size--;
-	}
+    
+
+    StackNode* aux = top;
+    Order val = top->value;
+    top = top->next;
+    delete aux; 
+    size--;
 	
 	return val; 
 }
@@ -440,46 +454,14 @@ int Stack::getSize(){
 	return size; 
 }
 
-int Stack::getTop(){	
+Order Stack::getTop(){	
 /**
  * @brief Get the top value of the stack without removing it O(1)
  * 
- * @return int value at the top, -1 if empty
+ * @return int value at the top
  */
-	if (isEmpty()){
-		cout << "Stack is empty!" << endl;
-		return -1;
-	}
-	return top->value;  
+    return top->value;  
 }
-
-//--------------------------------------- Partition ----------------------------------------//
-int partition(DoublyLinkedList a, int first, int last, int i, int j, int pivot){
-    /**
-     * @brief Partition function for iterative quicksort.
-     * 
-     * @param a 
-     * @param first The starting index of the array to be partitioned
-     * @param last The ending index of the array to be partitioned
-     * @param pivot The pivot value to partition
-     * 
-     */
-    pivot = a.find();
-    i = (first - 1);
-    for (j = first; j <= last - 1; j++){
-        if (arr[j] <= pivot){
-            i++;
-            swap(arr[i], arr[j]);
-        }
-        else{
-            continue;
-        }
-    }
-    swap(arr[i + 1], arr[last]);
-    return (i + 1);
-}
-
-//--------------------------------------- Iterative QuickSort ----------------------------------------//
 
 //--------------------------------------- Auxiliary functions ----------------------------------------//
 void readFile(string fileName, vector<Order>& orders){
@@ -624,9 +606,37 @@ time_t inputToTimeT(int month, int day, int hour = 0, int minute = 0, int second
 //SORTING ALGORITHMS 
 
 //Parttition
+ListNode* partition(DoublyLinkedList& a, ListNode* left, ListNode* right){
+    /**
+     * @brief Partition function for iterative quicksort.
+     * 
+     * @param a 
+     * @param left The starting index of the array to be partitioned
+     * @param right The ending index of the array to be partitioned
+     * 
+     * @return The index of the pivot 
+     */
+    ListNode* pivot = right; 
+    ListNode* i = nullptr;
 
+    for (ListNode* j = left; j != right; j = j->next){
+        if (j->value.getName() <= pivot->value.getName()){
+            if (i == nullptr){
+                i = left; 
+            }
+            else {
+                i = i->next; 
+            }
+            //missing swap
+        }
+
+    } 
+    return i; 
+    
+}
 //iterative_quicksort
-void iterative_quicksort(DoublyLinkedList &a, int left, int right){
+
+void iterative_quicksort(DoublyLinkedList &a, Order left, Order right){
     Stack s;
     s.push(left);
     s.push(right);
