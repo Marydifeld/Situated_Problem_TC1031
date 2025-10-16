@@ -19,7 +19,7 @@ int main(){
 
     //Console
     string start_date, end_date; 
-    cout << "Wellcome to the search tool by date" << endl;
+    cout << "Welcome to the search tool by date" << endl;
     cout << "Please be mindful of the requested format. This tool currently doesn't support years. (dd/mm)" << endl;
     cout << "Enter start and end dates separated by a blank space. (dd/mm dd/mm)" << endl; 
     cin >> start_date >> end_date; 
