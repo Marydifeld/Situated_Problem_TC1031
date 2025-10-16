@@ -76,9 +76,9 @@ class DoublyLinkedList {
 //Stack Class
 class Stack {
     struct StackNode{
-        Order value;
+        ListNode* value;
         StackNode* next; 
-        StackNode(const Order & element, StackNode* n = NULL)
+        StackNode(ListNode* element, StackNode* n = NULL)
             : value(element), next(n) { }
     };
 
@@ -94,10 +94,10 @@ class Stack {
         		pop();
 		}
 		
-		bool push (Order value);
-		Order pop();
+		bool push (ListNode* value);
+		ListNode* pop();
 		int getSize();
-		Order getTop();
+		ListNode* getTop();
 		bool isEmpty();
 		void show();
 };
@@ -387,7 +387,7 @@ void DoublyLinkedList::update(int index, Order newValue){
     aux->value = newValue;
 }
 //--------------------------------------Declaring Stack Methods---------------------------------------//
-bool Stack::push (Order value){
+bool Stack::push(ListNode* value){
 	/**
 	 * @brief Adds a new value on top of the stack. O(1)
 	 * 
@@ -404,7 +404,7 @@ bool Stack::push (Order value){
 	
 }
 
-Order Stack::pop(){
+ListNode* Stack::pop(){
 	/**
 	 * @brief Deletes the top value of the stack, O(1)
 	 * 
@@ -413,7 +413,7 @@ Order Stack::pop(){
     
 
     StackNode* aux = top;
-    Order val = top->value;
+    ListNode* val = top->value;
     top = top->next;
     delete aux; 
     size--;
@@ -454,7 +454,7 @@ int Stack::getSize(){
 	return size; 
 }
 
-Order Stack::getTop(){	
+ListNode* Stack::getTop(){	
 /**
  * @brief Get the top value of the stack without removing it O(1)
  * 
@@ -636,22 +636,22 @@ ListNode* partition(DoublyLinkedList& a, ListNode* left, ListNode* right){
 }
 //iterative_quicksort
 
-void iterative_quicksort(DoublyLinkedList &a, Order left, Order right){
+void iterative_quicksort(DoublyLinkedList &a, ListNode* left, ListNode* right){
     Stack s;
     s.push(left);
     s.push(right);
     while (!s.isEmpty()){
         right = s.pop();
         left = s.pop();
-        pivot = partition(a, left, right);
+        ListNode* pivot = partition(a, left, right);
 
-        if (left != pivot.prev && left != pivot){
-            stack.push(left);
-            stack.push(pivot.prev);
+        if (left != pivot->prev && left != pivot){
+            s.push(left);
+            s.push(pivot->prev);
 
         }
-        if (right != pivot.next && right != pivot){
-            s.push(pivot.next);
+        if (right != pivot->next && right != pivot){
+            s.push(pivot->next);
             s.push(right);
         }
     }
@@ -660,6 +660,7 @@ void iterative_quicksort(DoublyLinkedList &a, Order left, Order right){
 
 }
 
+//Pivot for recursive sort 
 time_t pivot(vector<Order> &a, int right, int left) {
     /**
      * @brief Picks a pivot for quicksort (median of three). No iterations so, constant time O(1)
@@ -684,6 +685,7 @@ time_t pivot(vector<Order> &a, int right, int left) {
     return a[right - 1].getDate();
 }
 
+//Insertion Sort
 void insertionSort(vector<Order> & a){ 
     /**
      * @brief The insertion sort algorithm. It works by setting aside an unsorted number
@@ -703,6 +705,7 @@ void insertionSort(vector<Order> & a){
     }
 }
 
+//Recursive quicksort
 void recursive_quicksort(vector<Order> &a, int left, int right){
     /**
      * @brief Helper function of quicksort(). Uses pivot to find the median of three and sorts
