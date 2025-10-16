@@ -7,6 +7,8 @@
 #include<sstream>
 using namespace std; 
 using std::cout; 
+//Initialize helper functions used in classes
+time_t inputToTimeT(int month, int day, int hour = 0, int minute = 0, int second = 0); 
 //------------------------------- Classes --------------------------------------//
 //Order Class
 class Order{
@@ -430,7 +432,7 @@ void Stack::show(){
 		cout << "Stack is empty" << endl;
 	} else {
 		for (int i = 0; aux != NULL; i++){
-			cout << "Stack[" << i << "] = " << aux->value << endl; 
+			cout << "Stack[" << i << "] = " << aux->value->value.orderToString() << endl; 
 			aux = aux->next; 
 		}
 	}
@@ -519,7 +521,6 @@ void readFile(string fileName, DoublyLinkedList& orders){
     */
    
     string line; 
-    int index; 
 
     ifstream inFile(fileName);
 
@@ -579,7 +580,7 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
     outFile.close();
 }
 
-time_t inputToTimeT(int month, int day, int hour = 0, int minute = 0, int second = 0){
+time_t inputToTimeT(int month, int day, int hour, int minute, int second){
     /**
      * @brief A helper function to turn input into time_t. It's only conversion so O(1)
      * 
@@ -805,9 +806,7 @@ int binarySearchHigher(vector<Order> a, time_t flag){
 }
 
 //Binary search higher for strings
-int binarySearchHighStrings(arr[], string restaurantName){
-
-}
+//int binarySearchHighStrings(arr[], string restaurantName){ }
 
 //Binary search lower for strings 
 
@@ -818,10 +817,10 @@ int main(){
     readFile("orders.txt", orders);
     cout << "Reading File..." << endl; 
     cout << "------------ First 10 sorted entries --------------" << endl; 
-    //quicksort(orders);
+    recursive_quicksort(orders);
     writeFile("sortedOrders.txt", orders, 0, orders.size());
     cout << "------------ File read and sorted -----------------" << endl; 
-
+    
     //Console
     string start_date, end_date; 
     cout << "Welcome to the search tool by date" << endl;
