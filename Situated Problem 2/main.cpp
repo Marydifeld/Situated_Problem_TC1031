@@ -388,6 +388,10 @@ void DoublyLinkedList::update(int index, Order newValue){
     }
     aux->value = newValue;
 }
+
+bool DoublyLinkedList::isEmpty(){
+    return (size == 0) ? true : false; 
+}
 //--------------------------------------Declaring Stack Methods---------------------------------------//
 bool Stack::push(ListNode* value){
 	/**
@@ -579,6 +583,8 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
     }
     outFile.close();
 }
+
+//void writeFile(string fileName,DoublyLinkedList & orders2, int start, int end){}
 
 time_t inputToTimeT(int month, int day, int hour, int minute, int second){
     /**
@@ -813,12 +819,18 @@ int binarySearchHigher(vector<Order> a, time_t flag){
 
 int main(){
     //Read & Sort
+    /*
     vector<Order> orders;
+    
+    recursive_quicksort(orders);
     readFile("orders.txt", orders);
+    
+
+    
     cout << "Reading File..." << endl; 
     cout << "------------ First 10 sorted entries --------------" << endl; 
-    recursive_quicksort(orders);
     writeFile("sortedOrders.txt", orders, 0, orders.size());
+    
     cout << "------------ File read and sorted -----------------" << endl; 
     
     //Console
@@ -841,7 +853,7 @@ int main(){
     cin >> ans; 
     if (ans == 'y'){
         cout << "------------ First 10 entries of search --------------" << endl;
-        writeFile("search_results.txt", orders, start_index, end_index);
+        //writeFile("search_results.txt", orders, start_index, end_index);
     }
     else if (ans == 'n'){
         for (int i = start_index; i <= end_index; i++){
@@ -849,7 +861,11 @@ int main(){
         }
     }
     
-    
+    */
+
+    DoublyLinkedList orders2; 
+    readFile("orders.txt", orders2);
+    orders2.showList();
 
 
 
