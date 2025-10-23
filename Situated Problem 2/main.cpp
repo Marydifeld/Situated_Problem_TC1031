@@ -68,7 +68,8 @@ class DoublyLinkedList {
 
 		void deleteFirst();
 		void deleteLast();				
-		void deleteAtIndex(int);		
+		void deleteAtIndex(int);
+        void swap(ListNode*, ListNode*);		
 
 		ListNode* find(Order, int*);			
 		void update(int, Order);	
@@ -392,6 +393,48 @@ void DoublyLinkedList::update(int index, Order newValue){
 bool DoublyLinkedList::isEmpty(){
     return (size == 0) ? true : false; 
 }
+
+void DoublyLinkedList::swap(ListNode* a, ListNode* b){
+/**
+ * @brief Swaps the nodes a and b, only pointer manipulation O(1)
+ * 
+ * @param a 
+ * @param b 
+ * 
+ */
+
+     if (a == b) return;
+     ListNode* aPrev = a->prev;
+     ListNode* aNext = a->next;
+     ListNode* bPrev = b->prev;
+     ListNode* bNext = b->next;
+     
+     if(aNext == b){
+        a->next = bNext;
+        a->prev = b;
+        b->next = a;
+        b->prev = aPrev;
+     }   
+     else if(bNext == a){
+        b->next = aNext;
+        b->prev = a;
+        a->next = b;
+        a->prev = bPrev;
+     }
+     else {
+        a->next = bNext;
+        a->prev = bPrev;
+        b->next = aNext;
+        b->prev = aPrev;
+     }
+
+     aPrev->next = b;
+     aNext->prev = b;
+     bPrev->next = a;
+     bNext->prev = a;
+
+}
+
 //--------------------------------------Declaring Stack Methods---------------------------------------//
 bool Stack::push(ListNode* value){
 	/**
@@ -612,7 +655,7 @@ time_t inputToTimeT(int month, int day, int hour, int minute, int second){
 
 //SORTING ALGORITHMS 
 
-//Parttition
+//Partition
 ListNode* partition(DoublyLinkedList& a, ListNode* left, ListNode* right){
     /**
      * @brief Partition function for iterative quicksort.
@@ -634,13 +677,22 @@ ListNode* partition(DoublyLinkedList& a, ListNode* left, ListNode* right){
             else {
                 i = i->next; 
             }
-            //missing swap
+            a.swap(i, j);
         }
 
     } 
+    if (i == nullptr){
+        i = left;
+    }
+    else {
+        i = i->next;
+    }
+    a.swap(i, pivot);
+
     return i; 
     
 }
+
 //iterative_quicksort
 
 void iterative_quicksort(DoublyLinkedList &a, ListNode* left, ListNode* right){
