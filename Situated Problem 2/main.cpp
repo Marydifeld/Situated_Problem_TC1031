@@ -19,7 +19,7 @@ class Order{
       float orderPrice;
     public: 
       Order(string restaurantName, string orderItem, float orderPrice);
-      time_t getDate();
+      time_t getDate() const;
       string getName();
       string getOrderItem();
       float getOrderPrice();
@@ -112,7 +112,7 @@ Order::Order(string name, string order, float price){
     orderItem = order; 
     orderPrice = price; 
 }
-time_t Order::getDate(){
+time_t Order::getDate() const{
     return date; 
 }
 
@@ -807,7 +807,7 @@ void recursive_quicksort(vector<Order> &a){
 
 //SEARCH ALGORITHMS
 
-int binarySearchLower(vector<Order> a, time_t flag){
+int binarySearchLower(const vector<Order> &a, time_t flag){
     /**
      * @brief Binary search adapted to find the date or the lowest index of where it could have
      * been placed in the sorted array. Very similar structure to binary date, which works by halving 
@@ -818,24 +818,22 @@ int binarySearchLower(vector<Order> a, time_t flag){
      * 
      * @return Index of the hipothetical position of the flag
      */
-    int i = 0;
-    int j = a.size(); 
-    int m; 
-    while(i < j){
-        m = (i + j)/2;
-
-        if (a[m].getDate() < flag){
-            i = m + 1; 
+    int low = 0;
+    int high = a.size(); 
+    while(low < high){
+        int mid = (low + high)/2;
+        if (a[mid].getDate() < flag){
+            low = mid + 1; 
         } 
         else{
-            j = m; 
+            high = mid; 
         }
     }
-    return i; 
+    return low; 
 
 }
 
-int binarySearchHigher(vector<Order> a, time_t flag){
+int binarySearchHigher(const vector<Order> &a, time_t flag){
     /**
      * @brief Binary search adapted to find the date or the highest index of where it could have
      * been placed in the sorted array. Very similar structure to binary date, which works by halving 
@@ -846,20 +844,16 @@ int binarySearchHigher(vector<Order> a, time_t flag){
      * 
      * @return Index of the hipothetical position of the flag
      */
-    int i = 0;
-    int j = a.size(); 
-    int m; 
-    while(i < j){
-        m = (i + j)/2;
-
-        if (a[m].getDate() <= flag){
-            i = m + 1; 
-        } 
-        else{
-            j = m; 
-        }
+    int low = 0;
+    int high = a.size();  
+    while(low < high){
+        int mid = (low + high)/2;
+        if (a[mid].getDate() <= flag)
+            low = mid + 1; 
+        else
+            high = mid; 
     }
-    return i; 
+    return low; 
 
 }
 
