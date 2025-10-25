@@ -807,6 +807,7 @@ void recursive_quicksort(vector<Order> &a){
 
 //SEARCH ALGORITHMS
 
+// Binary Search Lower and Higher for vectors 
 int binarySearchLower(const vector<Order> &a, time_t flag){
     /**
      * @brief Binary search adapted to find the date or the lowest index of where it could have
@@ -857,10 +858,48 @@ int binarySearchHigher(const vector<Order> &a, time_t flag){
 
 }
 
-//Binary search higher for strings
-//int binarySearchHighStrings(arr[], string restaurantName){ }
+//Binary search lower and higher for doubly linked list 
+ListNode* binarySearchLower(DoublyLinkedList& list, const string& flag) {
+    /**
+     * @brief Searches for the first node whose restaurant name is not less than 'flag'
+     *        Complexity is O(log n) due to halving the search space each iteration.
+     *     
+     */
+    int low = 0;
+    int high = list.getSize();
+    while (low < high) {
+        int mid = (low + high) / 2;
+        ListNode* midNode = list.getAtIndex(mid);
+        if (midNode->value.getName() < flag) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    if (low >= list.getSize()) return nullptr;
+    return list.getAtIndex(low);
+}
 
-//Binary search lower for strings 
+ListNode* binarySearchHigher(DoublyLinkedList& list, const string& flag) {
+    /**
+     * @brief Searches for the first node whose restaurant name is greater than 'flag'      
+     *        Complexity is 0(log n) due to halving the search space each iteration
+     * 
+     */
+    int low = 0;
+    int high = list.getSize();
+    while (low < high) {
+        int mid = (low + high) / 2;
+        ListNode* midNode = list.getAtIndex(mid);
+        if (midNode->value.getName() <= flag) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    if (low >= list.getSize()) return nullptr;
+    return list.getAtIndex(low);
+}
 
 
 int main(){
