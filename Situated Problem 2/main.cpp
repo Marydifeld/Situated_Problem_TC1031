@@ -903,57 +903,89 @@ ListNode* binarySearchHigher(DoublyLinkedList& list, const string& flag) {
 
 
 int main(){
-    //Read & Sort
-    /*
-    vector<Order> orders;
-    
-    recursive_quicksort(orders);
-    readFile("orders.txt", orders);
-    
 
-    
-    cout << "Reading File..." << endl; 
-    cout << "------------ First 10 sorted entries --------------" << endl; 
-    writeFile("sortedOrders.txt", orders, 0, orders.size());
-    
-    cout << "------------ File read and sorted -----------------" << endl; 
-    
-    //Console
-    string start_date, end_date; 
-    cout << "Welcome to the search tool by date" << endl;
-    cout << "Please be mindful of the requested format. This tool currently doesn't support years. (dd/mm)" << endl;
-    cout << "Enter start and end dates separated by a blank space. (dd/mm dd/mm)" << endl; 
-    cin >> start_date >> end_date; 
-    time_t start, end; 
+    // Read file and store orders in linked list
+    DoublyLinkedList ordersList;
+    cout << "Reading orders from file..." << endl;
+    readFile("orders.txt", ordersList);
+    cout << "File loaded successfully. Total orders: " << ordersList.getSize() << endl;
 
-    start = inputToTimeT(stoi(start_date.substr(3, 2)) - 1, stoi(start_date.substr(0, 2)));
-    end = inputToTimeT(stoi(end_date.substr(3, 2)) - 1, stoi(end_date.substr(0, 2)), 23, 59, 59);
-
-    //Search
-    int start_index = binarySearchLower(orders, start);
-    int end_index = binarySearchHigher(orders, end);
-
-    char ans; 
-    cout << "Would you like to save the results in a separate File? (y/n)";
-    cin >> ans; 
-    if (ans == 'y'){
-        cout << "------------ First 10 entries of search --------------" << endl;
-        //writeFile("search_results.txt", orders, start_index, end_index);
+    // Show first 5 orders unsorted
+    cout << "\nFirst 5 orders (unsorted):" << endl;
+    ListNode* current = ordersList.getFirst();
+    for(int i = 0; i < 5 && current != nullptr; i++){
+        cout << current->value.orderToString();
+        current = current->next;
     }
-    else if (ans == 'n'){
-        for (int i = start_index; i <= end_index; i++){
-            cout << orders[i].orderToString();
+
+    // Order by restaurant name - iterative quicksort with list and stack
+    cout << "\nSorting orders by restaurant name... " << endl;
+    if (ordersList.getFirst() != nullptr && ordersList.getLast() != nullptr){
+        iterative_quicksort(ordersList, ordersList.getFirst(), ordersList.getLast());
+        cout << "Sorting by restaurant name completed" << endl;
+
+        cout << "\nFirst 5 orders (sorted by restaurant name):" << endl;
+        current = ordersList.getFirst();
+        for(int i = 0; i < 5 && current != nullptr; i++){
+            cout << current->value.orderToString();
+            current = current->next;
         }
+    } else {
+        cout << "No orders to sort" << endl;
+        return 0;
+    }
+
+    // Ask for restaurant name
+    string restaurantName;
+    cout << "\n Enter restaurant name to search for: "; 
+    cin >> ws; // clears leading whitespace
+    getline(cin, restaurantName);
+
+    // Search for orders by restaurant name using binary search
+    ListNode* lower = binarySearchLower(ordersList, restaurantName);
+    ListNode* upper = binarySearchHigher(ordersList, restaurantName);
+
+    if (lower == nullptr){
+        cout << "No orders found for restaurant: " << restaurantName << endl;
+        return 0;
+    }
+
+    vector<Order> restaurantOrders;
+    cout << "\n Orders from restaurant: \n" << restaurantName << endl;
+
+    ListNode* currentOrder = lower;
+    while (currentOrder != upper && currentOrder != nullptr){
+        if (currentOrder->value.getName() == restaurantName){
+            restaurantOrders.push_back(currentOrder->value);
+        }
+        currentOrder = currentOrder->next;
+        if (currentOrder == ordersList.getFirst()) {
+            break;
+        } 
     }
     
-    */
+    // Show initial number of orders found
+    cout << "\nInitial orders found for " << restaurantName << " : " << restaurantOrders.size() << " orders" << endl; 
+    
+    // check if any orders were found
+    if (restaurantOrders.empty()){
+        cout << "No orders found for restaurant: " << restaurantName << endl;
+        return 0;
+    }
 
-    DoublyLinkedList orders2; 
-    readFile("orders.txt", orders2);
-    orders2.showList();
+    cout << "\nSorting orders by date... " << endl; 
+    recursive_quicksort(restaurantOrders);
 
+    cout << "\nSearch results: " << endl;
+    for (Order a : restaurantOrders){
+        cout << a.orderToString();
+    }
 
+    cout << "\n Total orders found: " << restaurantOrders.size() << endl;
 
+    writeFile("search_results.txt", restaurantOrders, 0, restaurantOrders.size());
+    cout << "Results saved to search_results.txt" << endl;
 
-    return 0; 
+    return 0;
+
 }
