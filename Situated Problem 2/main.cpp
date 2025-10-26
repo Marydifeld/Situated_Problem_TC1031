@@ -396,42 +396,16 @@ bool DoublyLinkedList::isEmpty(){
 
 void DoublyLinkedList::swap(ListNode* a, ListNode* b){
 /**
- * @brief Swaps the nodes a and b, only pointer manipulation O(1)
+ * @brief Swaps the value of th nodes a and b, O(1)
  * 
  * @param a 
  * @param b 
  * 
  */
 
-     if (a == b) return;
-     ListNode* aPrev = a->prev;
-     ListNode* aNext = a->next;
-     ListNode* bPrev = b->prev;
-     ListNode* bNext = b->next;
-     
-     if(aNext == b){
-        a->next = bNext;
-        a->prev = b;
-        b->next = a;
-        b->prev = aPrev;
-     }   
-     else if(bNext == a){
-        b->next = aNext;
-        b->prev = a;
-        a->next = b;
-        a->prev = bPrev;
-     }
-     else {
-        a->next = bNext;
-        a->prev = bPrev;
-        b->next = aNext;
-        b->prev = aPrev;
-     }
-
-     aPrev->next = b;
-     aNext->prev = b;
-     bPrev->next = a;
-     bNext->prev = a;
+    Order temp = a->value;
+    a->value = b->value;
+    b->value = temp;
 
 }
 
@@ -627,7 +601,7 @@ void writeFile(string fileName, vector<Order> & orders, int start, int end){
     outFile.close();
 }
 
-//void writeFile(string fileName,DoublyLinkedList & orders2, int start, int end){}
+
 
 time_t inputToTimeT(int month, int day, int hour, int minute, int second){
     /**
@@ -642,6 +616,7 @@ time_t inputToTimeT(int month, int day, int hour, int minute, int second){
      * @return The time_t equivalent of the date given 
      */
     tm temp = {};
+    temp.tm_isdst = 0;
     temp.tm_year = 2025 - 1900;
     temp.tm_mon = month; 
     temp.tm_mday = day; 
@@ -666,31 +641,19 @@ ListNode* partition(DoublyLinkedList& a, ListNode* left, ListNode* right){
      * 
      * @return The index of the pivot 
      */
-    ListNode* pivot = right; 
-    ListNode* i = nullptr;
-
-    for (ListNode* j = left; j != right; j = j->next){
-        if (j->value.getName() <= pivot->value.getName()){
-            if (i == nullptr){
-                i = left; 
-            }
-            else {
-                i = i->next; 
-            }
+    ListNode* pivot = right;
+    string pivotValue = pivot->value.getName(); 
+    ListNode* i = NULL;
+    for (ListNode* j = left; j != right; j = j->next) {
+        if (j->value.getName() <= pivotValue) {
+            i = (i == NULL) ? left : i->next;
             a.swap(i, j);
         }
-
-    } 
-    if (i == nullptr){
-        i = left;
     }
-    else {
-        i = i->next;
-    }
+    i = (i == NULL) ? left : i->next;
     a.swap(i, pivot);
+    return i;
 
-    return i; 
-    
 }
 
 //iterative_quicksort
@@ -707,8 +670,9 @@ void iterative_quicksort(DoublyLinkedList &a, ListNode* left, ListNode* right){
         if (left != pivot->prev && left != pivot){
             s.push(left);
             s.push(pivot->prev);
-
         }
+        
+
         if (right != pivot->next && right != pivot){
             s.push(pivot->next);
             s.push(right);
@@ -917,6 +881,7 @@ int main(){
         cout << current->value.orderToString();
         current = current->next;
     }
+    
 
     // Order by restaurant name - iterative quicksort with list and stack
     cout << "\nSorting orders by restaurant name... " << endl;
@@ -934,12 +899,13 @@ int main(){
         cout << "No orders to sort" << endl;
         return 0;
     }
-
+    
     // Ask for restaurant name
     string restaurantName;
     cout << "\n Enter restaurant name to search for: "; 
     cin >> ws; // clears leading whitespace
     getline(cin, restaurantName);
+    cout << restaurantName;
 
     // Search for orders by restaurant name using binary search
     ListNode* lower = binarySearchLower(ordersList, restaurantName);
