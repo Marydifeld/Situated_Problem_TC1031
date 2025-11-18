@@ -62,23 +62,6 @@ class Restaurant{
         
         void addOrder(Order b) {orders.push_back(b);}
         void updateOrders() {totalOrders = orders.size();}
-        void orderToString() {
-            //Formating time
-            for (int i = 0; i < orders.size(); i++){
-                time_t date = orders[i].getDate();
-                tm* lt = localtime(&date);
-                char fdate[80];
-                strftime(fdate, sizeof(fdate), "%b %d %H:%M:%S", lt);
-                
-
-                //Formating rest 
-                ostringstream oss;
-                oss << fdate << " R:" << restaurantName << " O:" << orders[i].getOrderItem() << 
-                    "(" << fixed << setprecision(1) << orders[i].getOrderPrice() << ")" << endl; 
-                cout <<  oss.str(); 
-            }
-            
-        };
 
         bool operator==(const Restaurant& other) const{
            return this->restaurantName == other.restaurantName;
@@ -199,8 +182,8 @@ public:
         makeNewTree(aux, root);
         return aux; 
     }
-    void restaurantToString(bool showOrders) {
-        restaurantToString(root, showOrders);
+    void restaurantToString() {
+        restaurantToString(root);
     }
 
 //Chosing how to sort the tree
@@ -385,7 +368,7 @@ bool isEqual(Restaurant & a, Restaurant & b) {
         show(node->right);
     }
 
-    void restaurantToString(NodeTree* node, bool showOrders){
+    void restaurantToString(NodeTree* node){
     /**
      * @brief Traverses all restaurants to later format their orders O(n)
      * 
@@ -393,17 +376,13 @@ bool isEqual(Restaurant & a, Restaurant & b) {
      */
         if (node == nullptr) return;
         ostringstream oss; 
-        restaurantToString(node->left, showOrders);
-        if (showOrders){
-            node->data.orderToString();
-        }
-        else {
-            oss << "Name: " << node->data.getName() << " Total Orders: " << node->data.getTotalOrders()
-            << " Acumulated Sales: " << node->data.getTotalCost() << endl;
-            formated.push_back(oss.str());
-        }
+        restaurantToString(node->left);
+
+        oss << "Name: " << node->data.getName() << " Total Orders: " << node->data.getTotalOrders()
+        << " Acumulated Sales: " << node->data.getTotalCost() << endl;
+        formated.push_back(oss.str());
         
-        restaurantToString(node->right, showOrders);
+        restaurantToString(node->right);
     }
     NodeTree* search(Restaurant key) {
     /**
@@ -539,7 +518,7 @@ void readFile(string fileName, AVLTree& tree){
     inFile.close();
 }
 
-void writeFile(string fileName, AVLTree & tree, bool showOrders){
+void writeFile(string fileName, AVLTree & tree){
     /**
      * @brief Writes the output file in the correct format. We iterate between start and end, which is linear. 
      * If we assume to be taking the entire vector, complexity is O(n)
@@ -556,7 +535,7 @@ void writeFile(string fileName, AVLTree & tree, bool showOrders){
     
 
     if(outFile.is_open()){
-        tree.restaurantToString(showOrders); 
+        tree.restaurantToString(); 
         for (int i = 0; i < tree.formated.size(); i++) {
             if (i < 10) {
                 cout << tree.formated[i]; 
@@ -577,11 +556,11 @@ int main(){
 
     AVLTree tree("by_name");
     readFile("orders.txt", tree);
-    writeFile("sortedByName.txt", tree, false); 
+    writeFile("sortedByName.txt", tree); 
     AVLTree tree2 = tree.makeNewTree("by_orders"); 
-    writeFile("sortedByOrders.txt", tree2, false); 
+    writeFile("sortedByOrders.txt", tree2); 
     AVLTree tree3 = tree.makeNewTree("by_sales"); 
-    writeFile("sortedBySales.txt", tree3, false); 
+    writeFile("sortedBySales.txt", tree3); 
 
     return 0; 
 }
