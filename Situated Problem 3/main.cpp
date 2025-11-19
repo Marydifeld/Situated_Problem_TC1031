@@ -550,17 +550,50 @@ void writeFile(string fileName, AVLTree & tree){
     outFile.close();
 }
 
-
-
 int main(){
 
     AVLTree tree("by_name");
     readFile("orders.txt", tree);
-    writeFile("sortedByName.txt", tree); 
-    AVLTree tree2 = tree.makeNewTree("by_orders"); 
-    writeFile("sortedByOrders.txt", tree2); 
-    AVLTree tree3 = tree.makeNewTree("by_sales"); 
-    writeFile("sortedBySales.txt", tree3); 
 
+    int option = 0;
+
+    while (option != 4){
+        cout << "\n Menu Options: \n";
+        cout << "1. Order by name\n";
+        cout << "2. Order by number of orders\n";
+        cout << "3. Order by total sales\n";
+        cout << "4. Exit\n";
+        cout << "Select an option: ";
+        cin >> option;
+
+        switch (option){
+            case 1:{
+                cout << "Ordering by name...\n";
+                AVLTree tree1 = tree.makeNewTree("by_name");
+                writeFile("sortedByName.txt", tree1);
+                cout << "File 'sortedByName.txt' created successfully.\n";
+                break;
+            }
+            case 2:{
+                cout << "\nOrdering by number of orders...\n";
+                AVLTree tree2 = tree.makeNewTree("by_orders"); 
+                writeFile("sortedByOrders.txt", tree2); 
+                cout << "File 'sortedByOrders.txt' created successfully.\n";
+                break;
+            }
+            case 3:{
+                cout << "\nOrdering by total sales...\n";
+                AVLTree tree3 = tree.makeNewTree("by_sales"); 
+                writeFile("sortedBySales.txt", tree3); 
+                cout << "File 'sortedBySales.txt' created successfully.\n";
+                break;
+            }   
+            case 4:
+                cout << "Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid option, please try again.\n";
+        }
+    }
     return 0; 
 }
