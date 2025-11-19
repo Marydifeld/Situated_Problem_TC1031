@@ -413,6 +413,14 @@ bool isEqual(Restaurant & a, Restaurant & b) {
     }
 
     void makeNewTree(AVLTree &newTree, NodeTree* node){
+    /**
+     * @brief Traverses the current tree and inserts every node into the new tree
+     * O(n log n) because for every node (n) we insert it into the new tree (log n)
+     * 
+     * @param newTree The new tree where every node will be inserted
+     * @param node The root of the recursions Tree
+     * 
+     */
         if (node==nullptr) return; 
         makeNewTree(newTree, node->left); 
         newTree.insert(node->data); 
