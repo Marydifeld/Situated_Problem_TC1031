@@ -11,10 +11,10 @@ int  numDishes, numRestaurants, numLines;
 //------------------------------- Classes --------------------------------------//
 struct ListNode {
             int neighborID; 
-            float price; 
+            float weight; 
             ListNode* next;
             ListNode(const int& element, float p = -1 , ListNode* n = nullptr)
-                : neighborID(element), price(p), next(n) { }
+                : neighborID(element), weight(p), next(n) { }
         };
 class LinkedList {
     private: 
@@ -126,7 +126,7 @@ class MenuGraph {
 
         ListNode * aux = restAdj[restIndex].getFirst(); 
         while (aux){
-            cout << dishes[aux->neighborID] << " " << aux->price << endl; 
+            cout << dishes[aux->neighborID] << " " << aux->weight << endl; 
             aux = aux->next; 
         }
     }
@@ -136,23 +136,82 @@ class MenuGraph {
         cout << "Search results for (with price): " << dish << endl;
         ListNode * aux = dishAdj[dishIndex].getFirst(); 
         while (aux){
-            cout << restaurants[aux->neighborID] << " " << aux->price << endl; 
+            cout << restaurants[aux->neighborID] << " " << aux->weight << endl; 
             aux = aux->next; 
         }
     }
 };
+struct Coordinate{
+            int x; 
+            int y; 
+            string type; 
+            Coordinate(int a, int b, string t = "House")
+            : x(a), y(b), type(t) {}
+        };
+class CityGraph {
+    private: 
+        int gridSize; 
+    public: 
+        
+
+        vector<Coordinate> coordinates; 
+        vector<LinkedList> Adjlocations; 
+
+        CityGraph(int gs) {
+            gridSize = gs * gs; 
+            Adjlocations.resize(gridSize); 
+
+         }
+
+        int getLocationID(Coordinate co){
+        /**
+         * @brief Finds the index of a specified location in the locations 
+         * vector. O(n)
+         * 
+         * @param name The name of the location to be found
+         * 
+         * @return The index of said location. If not found -1 
+         */
+            for (int i = 0; i < coordinates.size(); i++){
+                if (coordinates[i].x == co.x && coordinates[i].y == co.y) { return i; }
+            }
+            return -1; 
+        }
+        
+        void insertLocation(int locationId1, int locationId2, float dist){
+        /**
+         * @brief Inserts a new node into the Graph 
+         * 
+         * @param locationId The Index of the location
+         */
+            if (!Adjlocations[locationId1].find(locationId2)){
+                ListNode* aux = new ListNode(locationId2, dist); 
+                Adjlocations[locationId1].insertFirst(aux); 
+            }
+
+             if (!Adjlocations[locationId2].find(locationId1)){
+                ListNode* aux = new ListNode(locationId1, dist); 
+                Adjlocations[locationId2].insertFirst(aux); 
+            }
+            
+            
+
+
+        }
+    };
 
 //--------------------------------------- Auxiliary functions ----------------------------------------//
 
-MenuGraph readFile(string fileName){
+MenuGraph CreateMenuGraph(string fileName){
 
    /**
-     * @brief Reads the txt file and initializes a Restaurant object for every line. 
+     * @brief Reads the txt file and initializes a Graph. 
      * It iterates once trough every line of the database, so the complexity is O(n)
-     * Saves it to a Graph.
+     * 
      * 
      * @param fileName Name of the file to be opened (Needs to end in .txt)
-     * @param graph Will contain the Restaurants that each save their menus
+     * 
+     * @return a graph with the data
     */
 
     string line; 
@@ -209,11 +268,109 @@ MenuGraph readFile(string fileName){
     inFile.close();
     return g; 
 }
+CityGraph CreateCityGraph(string fileName, int gridSize) {
+    /**
+     * @brief Reads the txt file and initializes a Graph. 
+     * It iterates once trough every line of the database, so the complexity is O(n)
+     * 
+     * 
+     * @param fileName Name of city file to be opened (Needs to end in .txt)
+     * 
+     * @return a graph with the data
+    */
+    string line; 
+    CityGraph g(gridSize); 
 
+    ifstream inFile(fileName);
+    if (inFile.is_open()){ 
+        int i = 0;
+        while ( getline(inFile, line) ){
+            istringstream iss(line);
+
+            //Temporary variables
+            int x, y, x2, y2;   
+            char extra; 
+            float distance;
+
+            //Divide line
+            iss >> extra >> x >> extra >> y >> extra; 
+            iss >> extra >> x2 >> extra >> y2 >> extra; 
+            iss >> distance; 
+            Coordinate co1(x,y), co2(x2,y2); 
+            i++;
+
+           
+            int posCor1 = g.getLocationID(co1);
+            int posCor2 = g.getLocationID(co2);
+             
+            if (posCor1 == -1) {
+                g.coordinates.push_back(co1);
+                posCor1 = g.coordinates.size()-1;      
+            }
+            if (posCor2 == -1) {
+                g.coordinates.push_back(co2);
+                posCor2 = g.coordinates.size()-1;      
+            }
+
+
+            //Add to graph
+            g.insertLocation(posCor1, posCor2, distance); 
+           
+            
+        }
+    }
+    inFile.close();
+    return g; 
+}
+void addRestaurantsToCity(string fileName, CityGraph &g){
+/**
+ * @brief Reads a file that specifies a restaurant location, then it 
+ * modifies the coordinate to contain the restaurant name. 
+ * 
+ * @param fileName The file with the locations 
+ * @param g The Graph with the cityNodes
+ */
+
+    string line; 
+    ifstream inFile(fileName);
+    if (inFile.is_open()){ 
+        while ( getline(inFile, line) ){
+            istringstream iss(line);
+
+            //Temporary variables
+            int x, y;   
+            string name; 
+            string rest; 
+            char ch; 
+
+            //Divide line
+            getline(iss, rest); 
+            size_t pos = rest.find("(");
+            name = rest.substr(0, pos - 1);
+            rest.erase(0, pos - 1);
+            istringstream iss2(rest);
+            iss2 >> ch >> x >> ch >> y;            
+            Coordinate co(x,y);
+            int coId = g.getLocationID(co); 
+            g.coordinates[coId].type = name;  
+             
+           
+            
+        }
+    }
+    inFile.close();
+
+ }
 
 int main(){
-    MenuGraph g = readFile("menus.txt");
+    //MenuGraph g = CreateMenuGraph("menus.txt");
     //g.showMenu("Ana");
-    g.searchDish("Sopa de Tomate"); 
+    //g.searchDish("Sopa de Tomate"); 
+    CityGraph g2 = CreateCityGraph("city30x30.txt", 30);
+    addRestaurantsToCity("restaPlaces.txt", g2); 
+    for (int i = 0; i < 100; i++){
+        cout << g2.coordinates[i].type << endl;
+    }
+
     return 0; 
 }
