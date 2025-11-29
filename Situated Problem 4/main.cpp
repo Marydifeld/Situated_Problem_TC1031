@@ -82,6 +82,11 @@ class MinHeap {
         int rightChild(int i) {return (2*i + 2);}
 
         void insert(HeapNode* node){
+        /**
+         * @brief Inserts a new node into the heap and percolates it up to maintain heap property. O(log n)
+         * 
+         * @param node The node to be inserted
+         */    
             if (size == capacity) return; 
 
             H[size] = node; 
@@ -96,6 +101,11 @@ class MinHeap {
         }
 
         void percolateDown(int i) {
+        /**
+         * @brief Percolates a node down the heap to maintain heap property. O(log n)
+         * 
+         * @param i The index of the node to be percolated down 
+         */    
             int leftCh = leftChild(i); 
             int rightCh = rightChild(i); 
             int smallest = i;
@@ -193,6 +203,11 @@ class MenuGraph {
 
     
     void showMenu(string restaurant) {
+    /**
+     * @brief Display the menu of a specified restaurant. O(n) with n being the number of dishes in the restaurant
+     * 
+     * @param restaurant The name of the restaurant
+     */
         int restIndex = getRestaurantIndex(restaurant); 
         cout << restaurant << "'s Menu" << endl; 
         cout << "---------------------" << endl; 
@@ -205,6 +220,11 @@ class MenuGraph {
     }
 
     void searchDish(string dish) {
+    /** 
+     * @brief Search which restaurants serve a specified dish. O(n) with n being the number of restaurants that serve the dish
+     * 
+     * @param dish The name of the dish to be searched 
+     */
         int dishIndex = getDishIndex(dish); 
         cout << "Search results for (with price): " << dish << endl;
         ListNode * aux = dishAdj[dishIndex].getFirst(); 
@@ -269,7 +289,7 @@ class CityGraph {
         
         void insertLocation(int locationId1, int locationId2, float dist){
         /**
-         * @brief Inserts a new node into the Graph 
+         * @brief Inserts a new node into the Graph. O(n) because of search function
          * 
          * @param locationId The Index of the location
          */
@@ -414,7 +434,7 @@ CityGraph CreateCityGraph(string fileName, int gridSize) {
 void addRestaurantsToCity(string fileName, CityGraph &g){
 /**
  * @brief Reads a file that specifies a restaurant location, then it 
- * modifies the coordinate to contain the restaurant name. 
+ * modifies the coordinate to contain the restaurant name. Complexity is O(n)
  * 
  * @param fileName The file with the locations 
  * @param g The Graph with the cityNodes
@@ -450,7 +470,7 @@ void addRestaurantsToCity(string fileName, CityGraph &g){
  }
 vector<int> dijkstra(CityGraph &g, Coordinate source, vector<float> &d){
 /**
- * @brief Impletenation of Dijkstra's algorithm 
+ * @brief Impletenation of Dijkstra's algorithm. O((V + E) log V) with V being the number of vertices and E the number of edges.
  * 
  * @param 
  */
@@ -504,6 +524,14 @@ vector<int> buildPath(int destination, const vector<int>& previous) {
     return path;
 }
 void printResult(const vector<int>& path, const vector<float>& distance, int goal, CityGraph &g) {
+    /**
+     * @brief Prints the result of the pathfinding algorithm. O(n) with n being the number of nodes in the path
+     * 
+     * @param path The vector with the path nodes
+     * @param distance The vector with the distances to each node
+     * @param goal The index of the goal node
+     * @param g The graph with the city nodes
+     */
     int edges = path.size() - 1;
     float totalDistance = distance[goal];
 
@@ -520,6 +548,13 @@ void printResult(const vector<int>& path, const vector<float>& distance, int goa
     cout << endl;
 }
 void deliverOrder(CityGraph& g, string restaurantName, Coordinate destination) {
+    /**
+     * @brief Finds and prints the optimal path from a restaurant to a destination using Dijkstra's algorithm. O((V + E) log V)
+     * 
+     * @param g The graph with the city nodes
+     * @param restaurantName The name of the restaurant
+     * @param destination The coordinates of the destination
+     */
     //Look for Restaurant coordinates
     Coordinate source = g.coordinates[g.getRestaurantID(restaurantName)]; 
     int dest = g.getLocationID(destination);
