@@ -581,16 +581,87 @@ void readOrder(string fileName, CityGraph& g) {
         }       
     }
 }
+
 int main(){
-    //MenuGraph g = CreateMenuGraph("menus.txt");
-    //g.showMenu("Ana");
-    //g.searchDish("Sopa de Tomate"); 
-    CityGraph g2 = CreateCityGraph("city30x30.txt", 30);
-    addRestaurantsToCity("restaPlaces.txt", g2); 
-    readOrder("orders-city30x30.txt", g2); 
+    cout << "Uploading graphs from files..." << endl;
 
+    MenuGraph menuG = CreateMenuGraph("menus.txt");
+    CityGraph cityG = CreateCityGraph("city30x30.txt", 30);
+    addRestaurantsToCity("restaPlaces.txt", cityG);
 
-    
+    bool running = true;
+    while (running) {
+        cout << "\n=== MENU ===\n";
+        cout << "1) Show a restaurant's menu\n";
+        cout << "2) Search in which restaurants serves an specific dish\n";
+        cout << "3) Execute orders from file orders-city30x30.txt\n";
+        cout << "4) Delivery\n";
+        cout << "5) Exit\n";
+        cout << "Select one option: ";
 
-    return 0; 
+        int option;
+        if (!(cin >> option)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input, try again.\n";
+            continue;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+
+        if (option == 1) {
+            cout << "Insert the restaurant's name: ";
+            string rest;
+            getline(cin, rest);
+            int idx = menuG.getRestaurantIndex(rest);
+            if (idx == -1) {
+                cout << "Restaurant not found: " << rest << endl;
+            } else {
+                menuG.showMenu(rest);
+            }
+        }
+        else if (option == 2) {
+            cout << "Insert the dish name: ";
+            string dish;
+            getline(cin, dish);
+            int idx = menuG.getDishIndex(dish);
+            if (idx == -1) {
+                cout << "Dish not found: " << dish << endl;
+            } else {
+                menuG.searchDish(dish);
+            }
+        }
+        else if (option == 3) {
+            cout << "Executing all orders from orders-city30x30.txt...\n";
+            readOrder("orders-city30x30.txt", cityG);
+        }
+        else if (option == 4) {
+            cout << "Insert the restaurant's name: ";
+            string rest;
+            getline(cin, rest);
+            int restId = cityG.getRestaurantID(rest);
+            if (restId == -1) {
+                cout << "Restaurant not found in restPlaces file: " << rest << endl;
+                continue;
+            }
+            cout << "Insert the coordinates with this format -> x y (ej: 20 29): ";
+            int x, y;
+            if (!(cin >> x >> y)) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid coordinates.\n";
+                continue;
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            deliverOrder(cityG, rest, Coordinate(x, y));
+        }
+        else if (option == 5) {
+            cout << "Exiting...\n";
+            running = false;
+        }
+        else {
+            cout << "Option not valid, try again.\n";
+        }
+    }
+
+    return 0;
 }
