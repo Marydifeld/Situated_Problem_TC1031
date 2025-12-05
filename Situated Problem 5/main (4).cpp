@@ -768,6 +768,8 @@ vector<int> buildPath(int destination, const vector<int>& previous) {
 
     return path;
 }
+
+// Main 
 int main(){
     //Create Menu & City graphs with restaurant
     MenuGraph g = createMenuGraph("menus.txt");
@@ -779,41 +781,77 @@ int main(){
     SeparateChainingHashTable<string> dishs;
     generateMenuHashtables(g, rests, dishs);
 
-    //Example of Queries 
-    //int i = dishs.get("Tiramisu");
-    //string dish = g.getDishes()[i]; 
-    //g.showMenu("Ana");
-    //g.searchDish(dish);
+    int option;
+    do{
+        cout << "\n===== Menu =====" << endl;
+        cout << "1. See restaurant menu" << endl;
+        cout << "2. Search restaurants by dish" << endl;
+        cout << "3. Find the 3 nearest restaurants" << endl;
+        cout << "4. Exit" << endl;
+        cout << "\nSelect an option: ";
+        cin >> option;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    //Vectors to store information about closest restaurants
-    //stores de coordinate id where there are restaurants (one coordinate can have more than 1)
-    vector<int> coordsWRest; 
-    //Distance to the restaurant coordinates (Acces with coordinate id)
-    vector<float> distance; 
+        if(option == 1){
+            string restaurant;
+            cout << "Enter restaurant name: ";
+            getline(cin, restaurant);
+            if(!g.cointainsRestaurant(restaurant)){
+                cout << "Restaurant not found!" << endl;
+            }
+            else{
+                g.showMenu(restaurant);
+            }
+            }
 
-    //Location of user (need to turn into input)
-    Coordinate user(7,5);
-
-    //Run dijkstra to find 3 nearest restaurants 
-    coordsWRest = dijkstra(g2, user, distance, 3); 
-
-    for (int i = 0; i < coordsWRest.size(); i++){
-        vector<int> restsInCoor = g2.getValues()[coordsWRest[i]].restaurantsInHere;
-        for (int j = 0; j < restsInCoor.size(); j++) {
-            int index = restsInCoor[j];
-            string restaurant = g.getValues()[index];
-            cout << "Close restaurant: " << restaurant << endl;
-            cout << "At distance: " << distance[coordsWRest[i]]; 
-            cout << endl; 
-
-            //Maybe make displaying the menu optional? 
-            g.showMenu(restaurant);
-            cout << endl; 
+        else if(option == 2){
+            string dish;
+            cout << "Enter dish name: ";
+            getline(cin, dish);
+            int id = g.getId2(dish);
+            if(id == -1){
+                cout << "Dish not found!" << endl;
+            }
+            else{
+                g.searchDish(dish);
+            }
         }
-    }
-     
-     
-    
 
+        else if(option == 3){
+            int x, y;
+            cout << "Enter your (x, y) coordinates: ";
+            cin >> x >> y;
+            Coordinate user(x, y); //Location of user (need to turn into input)
+            vector<float> distance; // Distance vector to the restaurant coordinates
+            vector<int> coordsWRest = dijkstra(g2, user, distance, 3); 
 
-}
+            if(coordsWRest.empty()){
+                cout << "No restaurant found nearby!" << endl;
+            }
+            else{
+                cout << "\nThe 3 nearest restaurants are: " << endl;
+                for (int i = 0; i < coordsWRest.size(); i++){
+                vector<int> restsInCoor = g2.getValues()[coordsWRest[i]].restaurantsInHere;
+                    for (int j = 0; j < restsInCoor.size(); j++) {
+                        int index = restsInCoor[j];
+                        string restaurant = g.getValues()[index];
+                        cout << "Close restaurant: " << restaurant << endl;
+                        cout << "At distance: " << distance[coordsWRest[i]]; 
+                        cout << endl; 
+
+                        //Maybe make displaying the menu optional? 
+                        char showMenuOption;
+                        cout << "Do you want to see the menu? (y/n): ";
+                        cin >> showMenuOption;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        if (showMenuOption == 'y' || showMenuOption == 'Y'){
+                        g.showMenu(restaurant);
+                        }
+                        cout << endl; 
+                    }
+                }     
+            }
+        }
+    }while(option != 4);
+return 0;
+}    
