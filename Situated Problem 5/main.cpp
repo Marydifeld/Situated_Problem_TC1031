@@ -794,7 +794,7 @@ int main(){
 
         if(option == 1){
             string restaurant;
-            cout << "Enter restaurant name: ";
+            cout << "\nEnter restaurant name: ";
             getline(cin, restaurant);
             if(!g.cointainsRestaurant(restaurant)){
                 cout << "Restaurant not found!" << endl;
@@ -802,7 +802,7 @@ int main(){
             else{
                 g.showMenu(restaurant);
             }
-            }
+        }
 
         else if(option == 2){
             string dish;
@@ -821,7 +821,15 @@ int main(){
             int x, y;
             cout << "Enter your (x, y) coordinates: ";
             cin >> x >> y;
-            Coordinate user(x, y); //Location of user (need to turn into input)
+            cin.ignore();
+            Coordinate user(x, y);
+
+            int startID = g2.getId(user);
+            if(startID < 0 || startID >= g2.getSize()){
+                cout << "Invalid coordinates!" << endl;
+                continue;
+            }
+
             vector<float> distance; // Distance vector to the restaurant coordinates
             vector<int> coordsWRest = dijkstra(g2, user, distance, 3); 
 
@@ -832,6 +840,7 @@ int main(){
                 cout << "\nThe 3 nearest restaurants are: " << endl;
                 for (int i = 0; i < coordsWRest.size(); i++){
                 vector<int> restsInCoor = g2.getValues()[coordsWRest[i]].restaurantsInHere;
+                    if(restsInCoor.empty()) continue; // Skip if no restaurants in coordinate
                     for (int j = 0; j < restsInCoor.size(); j++) {
                         int index = restsInCoor[j];
                         string restaurant = g.getValues()[index];
@@ -839,7 +848,7 @@ int main(){
                         cout << "At distance: " << distance[coordsWRest[i]]; 
                         cout << endl; 
 
-                        //Maybe make displaying the menu optional? 
+                        //Asks if they want to see the menu of nearby restaurant
                         char showMenuOption;
                         cout << "Do you want to see the menu? (y/n): ";
                         cin >> showMenuOption;
